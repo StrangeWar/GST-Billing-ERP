@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Business ERP - Billing & Quotation System</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1e3a8a">
+    <link rel="icon" type="image/png" href="/static/images/logo.png">
+    
+    <!-- Tailwind CSS with Dark Mode Support -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- html2pdf for Direct 1-Click Client-Side PDF Generation -->
+    <script src="/static/js/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="/static/css/print.css">
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-track { background: #0f172a; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex h-screen overflow-hidden font-sans transition-colors duration-200">
+
+    <!-- SIDEBAR -->
+    <aside class="w-64 bg-slate-900 text-white flex flex-col flex-shrink-0 shadow-xl select-none">
+        <!-- Brand Header with Logo -->
+        <div class="p-5 border-b border-slate-800 flex items-center space-x-3">
+            <img src="/static/images/logo.png" alt="Logo" id="sidebar-logo" class="w-12 h-12 object-contain bg-white rounded-lg p-1 shadow-sm">
+            <div class="overflow-hidden">
+                <h1 id="sidebar-company-name" class="font-bold text-sm tracking-wide text-white truncate">Open ERP</h1>
+                <p id="sidebar-company-tagline" class="text-[11px] text-blue-400 font-medium truncate">Billing & Invoicing</p>
+            </div>
+        </div>
+
+        <!-- Nav Items -->
+        <nav class="flex-1 p-3 space-y-1.5 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all bg-blue-600 text-white shadow-md">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                <span>Dashboard</span>
+            </button>
+            <button onclick="switchTab('invoices')" id="nav-invoices" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                <span>Tax Invoices</span>
+            </button>
+            <button onclick="switchTab('quotations')" id="nav-quotations" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                <span>Quotations</span>
+            </button>
+            <button onclick="switchTab('challans')" id="nav-challans" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="truck" class="w-4 h-4"></i>
+                <span>Delivery Challans</span>
+            </button>
+            <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="calculator" class="w-4 h-4"></i>
+                <span>GST & Reports</span>
+            </button>
+            <button onclick="switchTab('customers')" id="nav-customers" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+                <span>Hospitals & Clients</span>
+            </button>
+            <button onclick="switchTab('products')" id="nav-products" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="stethoscope" class="w-4 h-4"></i>
+                <span>Medical Equipment</span>
+            </button>
+            <button onclick="switchTab('backups')" id="nav-backups" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Data Backup & Safety</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:bg-slate-800 hover:text-white">
+                <i data-lucide="settings" class="w-4 h-4"></i>
+                <span>Company & Bank</span>
+            </button>
+        </nav>
+
+        <!-- Install PWA Desktop App Prompt & Offline Status -->
+        <div class="p-3 border-t border-slate-800 text-xs text-slate-400 space-y-2">
+            <div id="pwa-install-container" class="hidden">
+                <button id="pwa-install-btn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-3 rounded-lg flex items-center justify-center space-x-2 transition shadow">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Install Desktop App</span>
+                </button>
+            </div>
+            <div class="flex items-center space-x-2 px-2 text-slate-400">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>Local Offline ERP Active</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Top Navigation Bar -->
+        <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between shadow-sm flex-shrink-0 transition-colors">
+            <div class="flex items-center space-x-3">
+                <h2 id="page-title" class="text-lg font-bold text-slate-800 dark:text-slate-100">Dashboard</h2>
+                <span class="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">Gorakhpur HQ</span>
+            </div>
+            <div class="flex items-center space-x-3">
+                <!-- Dark Mode Toggle Button -->
+                <button onclick="toggleDarkMode()" id="theme-toggle-btn" class="p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition" title="Toggle Dark / Light Mode">
+                    <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+                </button>
+
+                <button onclick="openNewInvoiceModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1 shadow-sm transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>New Invoice</span>
+                </button>
+                <button onclick="openNewQuoteModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1 shadow-sm transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>New Quote</span>
+                </button>
+                <button onclick="openNewChallanModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-3 py-2 rounded-lg flex items-center space-x-1 shadow-sm transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span>New Challan</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Dynamic Tab Views Container -->
+        <div class="flex-1 overflow-y-auto p-6" id="tab-container">
+
+            <!-- 1. DASHBOARD VIEW -->
+            <div id="view-dashboard" class="space-y-6">
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Total Sales</p>
+                            <h3 id="dash-total-sales" class="text-2xl font-black text-slate-900 dark:text-white mt-1">₹0.00</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                            <i data-lucide="indian-rupee" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Tax Invoices</p>
+                            <h3 id="dash-invoice-count" class="text-2xl font-black text-slate-900 dark:text-white mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                            <i data-lucide="file-text" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Quotations Sent</p>
+                            <h3 id="dash-quote-count" class="text-2xl font-black text-slate-900 dark:text-white mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                            <i data-lucide="file-spreadsheet" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Hospitals & Clients</p>
+                            <h3 id="dash-customer-count" class="text-2xl font-black text-slate-900 dark:text-white mt-1">0</h3>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                            <i data-lucide="building" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Tables Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Recent Invoices -->
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center space-x-2">
+                                <i data-lucide="file-text" class="w-4 h-4 text-blue-600 dark:text-blue-400"></i>
+                                <span>Recent Invoices</span>
+                            </h4>
+                            <button onclick="switchTab('invoices')" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">View All</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-3">Invoice No</th>
+                                        <th class="p-3">Hospital / Client</th>
+                                        <th class="p-3 text-right">Amount</th>
+                                        <th class="p-3 text-center">Status</th>
+                                        <th class="p-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-recent-invoices" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Recent Quotations -->
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center space-x-2">
+                                <i data-lucide="file-spreadsheet" class="w-4 h-4 text-emerald-600 dark:text-emerald-400"></i>
+                                <span>Recent Quotations</span>
+                            </h4>
+                            <button onclick="switchTab('quotations')" class="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">View All</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-3">Quote No</th>
+                                        <th class="p-3">Hospital / Client</th>
+                                        <th class="p-3 text-right">Amount</th>
+                                        <th class="p-3 text-center">Status</th>
+                                        <th class="p-3 text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dash-recent-quotes" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. TAX INVOICES VIEW -->
+            <div id="view-invoices" class="space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="relative w-72">
+                        <input type="text" id="search-invoices" placeholder="Search invoice or customer..." oninput="filterInvoices()" class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-900 dark:text-white">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                    </div>
+                    <button onclick="openNewInvoiceModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Create Tax Invoice</span>
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="p-3.5">Invoice No</th>
+                                <th class="p-3.5">Type</th>
+                                <th class="p-3.5">Date</th>
+                                <th class="p-3.5">Hospital / Recipient</th>
+                                <th class="p-3.5">State</th>
+                                <th class="p-3.5 text-right">Grand Total (₹)</th>
+                                <th class="p-3.5 text-center">Status</th>
+                                <th class="p-3.5 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoices-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3. QUOTATIONS VIEW -->
+            <div id="view-quotations" class="space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="relative w-72">
+                        <input type="text" id="search-quotations" placeholder="Search quotation or customer..." oninput="filterQuotations()" class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-900 dark:text-white">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                    </div>
+                    <button onclick="openNewQuoteModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Create Quotation Estimate</span>
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="p-3.5">Quote No</th>
+                                <th class="p-3.5">Type</th>
+                                <th class="p-3.5">Date</th>
+                                <th class="p-3.5">Valid Until</th>
+                                <th class="p-3.5">Hospital / Recipient</th>
+                                <th class="p-3.5 text-right">Grand Total (₹)</th>
+                                <th class="p-3.5 text-center">Status</th>
+                                <th class="p-3.5 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="quotations-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. CUSTOMERS / HOSPITALS VIEW -->
+            <div id="view-customers" class="space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="relative w-72">
+                        <input type="text" id="search-customers" placeholder="Search hospital name or city..." oninput="filterCustomers()" class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-900 dark:text-white">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                    </div>
+                    <button onclick="openCustomerModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add Customer / Hospital</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="customers-cards-grid">
+                    <!-- Customer cards injected via JS -->
+                </div>
+            </div>
+
+            <!-- 5. MEDICAL EQUIPMENT / PRODUCTS VIEW -->
+            <div id="view-products" class="space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="relative w-72">
+                        <input type="text" id="search-products" placeholder="Search equipment or HSN..." oninput="filterProducts()" class="w-full pl-9 pr-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none bg-white dark:bg-slate-900 dark:text-white">
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                    </div>
+                    <button onclick="openProductModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>Add Medical Equipment</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="products-cards-grid">
+                    <!-- Product cards injected via JS -->
+                </div>
+            </div>
+
+            <!-- 6. BACKUP & SAFETY VIEW -->
+            <div id="view-backups" class="space-y-6 hidden">
+                <div class="bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-xl p-5">
+                    <div class="flex items-start space-x-3">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-blue-700 dark:text-blue-400 mt-0.5 flex-shrink-0"></i>
+                        <div>
+                            <h3 class="font-bold text-blue-900 dark:text-blue-200 text-sm">Automated Data Protection Engine</h3>
+                            <p class="text-xs text-blue-700 dark:text-blue-300 mt-1 leading-relaxed">
+                                To protect your business from hardware crashes or data loss, your ERP automatically creates timestamped backups on startup, every time an invoice is created, and on quotations. You can also download backups to a USB drive or cloud drive at any time.
+                            </p>
+                            <div class="mt-4 flex space-x-3">
+                                <button onclick="triggerManualBackup()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                                    <i data-lucide="save" class="w-4 h-4"></i>
+                                    <span>Create Instant Backup Now</span>
+                                </button>
+                                <label class="cursor-pointer bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                                    <i data-lucide="upload" class="w-4 h-4"></i>
+                                    <span>Upload & Restore Backup (.db)</span>
+                                    <input type="file" id="backup-upload-input" accept=".db" onchange="uploadBackupFile(event)" class="hidden">
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm">Available Backup Snapshots</h4>
+                    </div>
+                    <table class="w-full text-xs text-left">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-800">
+                            <tr>
+                                <th class="p-3.5">Backup File</th>
+                                <th class="p-3.5">Size</th>
+                                <th class="p-3.5">Created Date & Time</th>
+                                <th class="p-3.5 text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="backups-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 7. SETTINGS VIEW -->
+            <div id="view-settings" class="space-y-6 hidden">
+                <!-- White-Label Onboarding Banner -->
+                <div class="bg-gradient-to-r from-blue-600/10 via-indigo-600/10 to-transparent border border-blue-200 dark:border-blue-900/50 rounded-xl p-4 flex items-start space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <i data-lucide="building-2" class="w-4 h-4"></i>
+                    </div>
+                    <div class="text-xs">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-100">White-Label & Company Customization</h4>
+                        <p class="text-slate-500 dark:text-slate-400 mt-0.5">Configure your company identity, logo, tax registration, document prefixes, bank accounts, and UPI payment details. All settings update automatically across the entire app and on all printed invoices, quotations, and delivery challans.</p>
+                    </div>
+                </div>
+
+                <form id="settings-form" onsubmit="saveSettings(event)" class="space-y-6 max-w-4xl bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <!-- Company Logo Upload Section -->
+                    <div class="border-b dark:border-slate-800 pb-5">
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base mb-2">Company Logo (Printed on Invoices & Documents)</h3>
+                        <div class="flex flex-wrap items-center gap-5">
+                            <div class="w-24 h-24 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-2 flex items-center justify-center shadow-sm">
+                                <img src="/static/images/logo.png" alt="Company Logo" id="settings-logo-preview" class="max-w-full max-h-full object-contain">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300">Change / Upload New Logo</label>
+                                <div class="flex items-center space-x-3">
+                                    <input type="file" id="settings-logo-file" accept="image/*" onchange="uploadLogoFile(event)" class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-slate-800 dark:file:text-blue-400">
+                                    <button type="button" onclick="resetLogoToDefault()" class="text-xs px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+                                        Reset to Default
+                                    </button>
+                                </div>
+                                <p class="text-[11px] text-slate-400">Supported formats: PNG, JPG, WebP, SVG. Recommended: Transparent background.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Company Profile Section -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base border-b dark:border-slate-800 pb-2 mb-4">Company Profile (Header of Invoices & Quotes)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Company Name *</label>
+                                <input type="text" id="set-name" required placeholder="e.g. ACME Technologies Pvt Ltd" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Tagline / Business Nature</label>
+                                <input type="text" id="set-tagline" placeholder="e.g. Healthcare & Medical Solutions" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Registered Address *</label>
+                                <input type="text" id="set-address" required placeholder="Full business address with pin code" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone Number *</label>
+                                <input type="text" id="set-phone" required placeholder="+91 9876543210" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
+                                <input type="email" id="set-email" required placeholder="info@company.com" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">GSTIN / Tax ID *</label>
+                                <input type="text" id="set-gstin" required oninput="handleGstinInput(this)" placeholder="e.g. 09AAAAA0000A1Z5" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono uppercase">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Registered State *</label>
+                                    <input type="text" id="set-state" required placeholder="Uttar Pradesh" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">State Code (2 Digits) *</label>
+                                    <input type="text" id="set-state-code" required maxlength="2" placeholder="09" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Document Numbering & Series Prefixes -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base border-b dark:border-slate-800 pb-2 mb-4">Document Series & Numbering Prefixes</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Tax Invoice Prefix</label>
+                                <input type="text" id="set-invoice-prefix" required placeholder="INV/" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1">Generates: <code>INV/26-27/001</code></p>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Quotation Prefix</label>
+                                <input type="text" id="set-quotation-prefix" required placeholder="QT/" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1">Generates: <code>QT/26-27/001</code></p>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Delivery Challan Prefix</label>
+                                <input type="text" id="set-challan-prefix" required placeholder="DC/" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1">Generates: <code>DC/26-27/001</code></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bank & UPI Details -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base border-b dark:border-slate-800 pb-2 mb-4">Bank & UPI Details (For Payment Settlement)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Bank Name</label>
+                                <input type="text" id="set-bank-name" required placeholder="State Bank of India" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Branch</label>
+                                <input type="text" id="set-branch" required placeholder="Main Branch" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Account Number</label>
+                                <input type="text" id="set-account-no" required placeholder="123456789012" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">IFSC Code</label>
+                                <input type="text" id="set-ifsc" required placeholder="SBIN0001234" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono uppercase">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">UPI Address (VPA)</label>
+                                <input type="text" id="set-upi-address" required placeholder="merchant@upi" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-mono">
+                                <p class="text-[10px] text-slate-400 mt-1">Automatic QR code will be generated on all invoices for this UPI VPA.</p>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">UPI Account Name</label>
+                                <input type="text" id="set-upi-name" required placeholder="Your Company Name" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Default Terms & Remarks -->
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base border-b dark:border-slate-800 pb-2 mb-4">Default Terms & Remarks</h3>
+                        <div class="space-y-4 text-xs">
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Default Invoice Terms</label>
+                                <textarea id="set-terms-invoice" rows="2" placeholder="Thank you for your business!" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Default Quotation Terms & Delivery Policy</label>
+                                <textarea id="set-terms-quotation" rows="3" placeholder="1. Delivery: Standard delivery period is 2-4 weeks.\n2. Payment: 50% advance & 50% on dispatch." class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Default Delivery Challan Terms</label>
+                                <textarea id="set-terms-challan" rows="3" placeholder="1. The goods transported under this challan are for delivery/installation/demonstration.\n2. Ownership remains with the supplier until full payment." class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t dark:border-slate-800">
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-6 py-2.5 rounded-lg shadow-sm transition flex items-center space-x-1.5">
+                            <i data-lucide="check" class="w-4 h-4"></i>
+                            <span>Save Settings</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 8. DELIVERY CHALLANS VIEW -->
+            <div id="view-challans" class="space-y-4 hidden">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-3 flex-1 max-w-md">
+                        <div class="relative w-full">
+                            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
+                            <input type="text" id="search-challans" oninput="filterChallans()" placeholder="Search delivery challans by no, hospital, or purpose..." class="w-full pl-9 pr-4 py-2 border dark:border-slate-800 rounded-lg text-xs dark:bg-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+                    <button onclick="openNewChallanModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold px-4 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>New Delivery Challan</span>
+                    </button>
+                </div>
+
+                <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700">
+                                <tr>
+                                    <th class="p-3.5">Challan No</th>
+                                    <th class="p-3.5">Date</th>
+                                    <th class="p-3.5">Consignee / Hospital</th>
+                                    <th class="p-3.5">Purpose / Reason</th>
+                                    <th class="p-3.5">Vehicle / Transporter</th>
+                                    <th class="p-3.5 text-right">Approx Value</th>
+                                    <th class="p-3.5 text-center">Status</th>
+                                    <th class="p-3.5 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="challans-table-body" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <!-- Injected via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 9. GST & REPORTS VIEW -->
+            <div id="view-reports" class="space-y-6 hidden">
+                <!-- Filter Toolbar -->
+                <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex flex-wrap items-center gap-3 text-xs">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">Financial Year</label>
+                            <select id="report-fy" onchange="loadGstReports()" class="p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white font-semibold">
+                                <option value="26-27" selected>FY 2026-2027</option>
+                                <option value="25-26">FY 2025-2026</option>
+                                <option value="">All Periods</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">From Date (DD-MM-YYYY)</label>
+                            <input type="text" id="report-from-date" placeholder="01-04-2026" class="p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">To Date (DD-MM-YYYY)</label>
+                            <input type="text" id="report-to-date" placeholder="31-03-2027" class="p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                        </div>
+                        <div class="pt-5">
+                            <button onclick="loadGstReports()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition shadow-sm">
+                                Apply Filter
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Export Actions -->
+                    <div class="flex items-center space-x-2">
+                        <button onclick="exportGstr1Csv()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i>
+                            <span>Download GSTR-1 CSV</span>
+                        </button>
+                        <button onclick="exportSalesRegisterCsv()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3.5 py-2 rounded-lg flex items-center space-x-1.5 shadow-sm transition">
+                            <i data-lucide="download" class="w-4 h-4"></i>
+                            <span>Sales Register CSV</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Taxable Turnover</p>
+                        <h3 id="rep-taxable" class="text-xl font-bold text-slate-900 dark:text-white mt-1">₹0.00</h3>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Central Tax (CGST)</p>
+                        <h3 id="rep-cgst" class="text-xl font-bold text-blue-600 dark:text-blue-400 mt-1">₹0.00</h3>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">State Tax (SGST)</p>
+                        <h3 id="rep-sgst" class="text-xl font-bold text-indigo-600 dark:text-indigo-400 mt-1">₹0.00</h3>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Integrated Tax (IGST)</p>
+                        <h3 id="rep-igst" class="text-xl font-bold text-purple-600 dark:text-purple-400 mt-1">₹0.00</h3>
+                    </div>
+                    <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                        <p class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase">Total GST Collected</p>
+                        <h3 id="rep-total-tax" class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-1">₹0.00</h3>
+                    </div>
+                </div>
+
+                <!-- GSTR-1 Tables Grid -->
+                <div class="space-y-6">
+                    <!-- Table 4: B2B -->
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center space-x-2">
+                                <span class="px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-xs">Table 4</span>
+                                <span>B2B Invoices (Supplies to Registered GSTIN Holders)</span>
+                            </h4>
+                            <span id="rep-b2b-count" class="text-xs font-semibold text-slate-500">0 Invoices</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-3">GSTIN</th>
+                                        <th class="p-3">Hospital / Client</th>
+                                        <th class="p-3">Invoice No</th>
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">State</th>
+                                        <th class="p-3 text-right">Taxable Value</th>
+                                        <th class="p-3 text-right">Invoice Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rep-b2b-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Table 7: B2CS -->
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center space-x-2">
+                                <span class="px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 text-xs">Table 7</span>
+                                <span>B2CS Invoices (Supplies to Unregistered Doctors / Clinics)</span>
+                            </h4>
+                            <span id="rep-b2cs-count" class="text-xs font-semibold text-slate-500">0 Invoices</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-3">Invoice No</th>
+                                        <th class="p-3">Customer / Doctor</th>
+                                        <th class="p-3">Date</th>
+                                        <th class="p-3">State</th>
+                                        <th class="p-3 text-right">Taxable Value</th>
+                                        <th class="p-3 text-right">CGST</th>
+                                        <th class="p-3 text-right">SGST</th>
+                                        <th class="p-3 text-right">Invoice Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rep-b2cs-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Table 12: HSN Summary -->
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                            <h4 class="font-bold text-slate-800 dark:text-slate-100 text-sm flex items-center space-x-2">
+                                <span class="px-2 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-xs">Table 12</span>
+                                <span>HSN / SAC Summary of Outward Supplies</span>
+                            </h4>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-xs text-left">
+                                <thead class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold border-b border-slate-200 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-3">HSN/SAC</th>
+                                        <th class="p-3">Description</th>
+                                        <th class="p-3 text-center">UQC</th>
+                                        <th class="p-3 text-center">Total Qty</th>
+                                        <th class="p-3 text-right">Taxable Value</th>
+                                        <th class="p-3 text-right">IGST</th>
+                                        <th class="p-3 text-right">CGST</th>
+                                        <th class="p-3 text-right">SGST</th>
+                                        <th class="p-3 text-right">Total Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rep-hsn-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL: CREATE / EDIT INVOICE -->
+    <div id="modal-invoice" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <div class="flex items-center space-x-3">
+                    <h3 id="modal-invoice-title" class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center space-x-2">
+                        <i data-lucide="file-text" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+                        <span>Create Tax Invoice</span>
+                    </h3>
+                    <span id="inv-no-badge" class="bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-xs font-bold px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800">
+                        Invoice No: Auto-generated
+                    </span>
+                </div>
+                <button onclick="closeModal('modal-invoice')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="invoice-form" onsubmit="saveInvoice(event)" class="flex-1 overflow-y-auto p-6 space-y-6 text-xs">
+                <input type="hidden" id="inv-edit-id" value="">
+
+                <!-- Invoice Type & Customer & Dates -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Invoice For (Goods / Services)</label>
+                        <select id="inv-type" onchange="onInvoiceTypeChange()" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white font-medium">
+                            <option value="Goods">Goods (Medical Equipment / Machines)</option>
+                            <option value="Services">Services (Maintenance / AMC / Repair / Installation)</option>
+                            <option value="Both">Both (Goods & Services)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Invoice Date</label>
+                        <input type="text" id="inv-date" placeholder="DD-MM-YYYY" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Due Date</label>
+                        <input type="text" id="inv-due-date" placeholder="DD-MM-YYYY" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Hospital / Customer</label>
+                        <select id="inv-cust-select" onchange="onInvoiceCustomerSelect()" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white">
+                            <option value="">-- Choose Existing or Enter Details --</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Customer / Hospital Name</label>
+                        <input type="text" id="inv-cust-name" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Customer Full Address</label>
+                        <input type="text" id="inv-cust-address" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">GSTIN</label>
+                        <input type="text" id="inv-cust-gstin" value="N/A" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Billing State</label>
+                        <input type="text" id="inv-cust-state" value="Uttar Pradesh" oninput="recalcInvoiceTotals()" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+
+                    <!-- Hospital PO & Transport / E-Way Bill (Optional) -->
+                    <div class="md:col-span-4 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <div class="text-[11px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wide mb-2 flex items-center space-x-1">
+                            <i data-lucide="truck" class="w-3.5 h-3.5 text-blue-600"></i>
+                            <span>Hospital PO Reference & Transport / E-Way Bill (Optional)</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">PO Number</label>
+                                <input type="text" id="inv-po-no" placeholder="e.g. PO-2026/89" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">PO Date</label>
+                                <input type="text" id="inv-po-date" placeholder="DD-MM-YYYY" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">E-Way Bill No</label>
+                                <input type="text" id="inv-eway-bill" placeholder="12-digit E-Way No" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">Vehicle No</label>
+                                <input type="text" id="inv-vehicle-no" placeholder="e.g. UP 53 AB 1234" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">Transporter Name</label>
+                                <input type="text" id="inv-transporter" placeholder="e.g. Blue Dart / By Hand" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Line Items & Medical Equipment / Services</h4>
+                        <button type="button" onclick="addInvoiceItemRow()" class="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 hover:bg-blue-100 font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-blue-200 dark:border-blue-800 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>Add Item</span>
+                        </button>
+                    </div>
+
+                    <table class="w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-left">
+                            <tr>
+                                <th class="p-2.5">Item / Serial No</th>
+                                <th class="p-2.5 w-24 text-center">Type</th>
+                                <th class="p-2.5 w-20 text-center">HSN/SAC</th>
+                                <th class="p-2.5 w-16 text-center">Qty</th>
+                                <th class="p-2.5 w-16 text-center">Unit</th>
+                                <th class="p-2.5 w-32">Rate (₹)</th>
+                                <th class="p-2.5 w-28 text-center">Rate Type</th>
+                                <th class="p-2.5 w-16 text-center">GST %</th>
+                                <th class="p-2.5 w-28 text-right">Amount (₹)</th>
+                                <th class="p-2.5 w-10 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-items-tbody" class="divide-y divide-slate-200 dark:divide-slate-700">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Totals & Terms -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t dark:border-slate-800">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Terms, Conditions & Remarks</label>
+                        <textarea id="inv-terms" rows="3" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                            <span>Subtotal (Excl. Tax):</span>
+                            <span id="inv-subtotal" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div id="inv-cgst-row" class="flex justify-between text-slate-600 dark:text-slate-400">
+                            <span>Central Tax (CGST):</span>
+                            <span id="inv-cgst" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div id="inv-sgst-row" class="flex justify-between text-slate-600 dark:text-slate-400">
+                            <span>State Tax (SGST):</span>
+                            <span id="inv-sgst" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div id="inv-igst-row" class="flex justify-between text-slate-600 dark:text-slate-400 hidden">
+                            <span>Integrated Tax (IGST):</span>
+                            <span id="inv-igst" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-900 dark:text-white font-bold text-sm pt-2 border-t border-slate-300 dark:border-slate-600">
+                            <span>Grand Total (INR):</span>
+                            <span id="inv-grand-total" class="text-blue-700 dark:text-blue-400 text-base">₹0.00</span>
+                        </div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 italic pt-1" id="inv-amount-words"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t dark:border-slate-800">
+                    <button type="button" onclick="closeModal('modal-invoice')" class="px-4 py-2 border dark:border-slate-700 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow-sm transition">Save Invoice</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE / EDIT QUOTATION -->
+    <div id="modal-quotation" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <div class="flex items-center space-x-3">
+                    <h3 id="modal-quotation-title" class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center space-x-2">
+                        <i data-lucide="file-spreadsheet" class="w-5 h-5 text-emerald-600 dark:text-emerald-400"></i>
+                        <span>Create Quotation Estimate</span>
+                    </h3>
+                    <span id="quote-no-badge" class="bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        Quote No: Auto-generated
+                    </span>
+                </div>
+                <button onclick="closeModal('modal-quotation')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="quote-form" onsubmit="saveQuotation(event)" class="flex-1 overflow-y-auto p-6 space-y-6 text-xs">
+                <input type="hidden" id="quote-edit-id" value="">
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Quotation For (Goods / Services)</label>
+                        <select id="quote-type" onchange="onQuoteTypeChange()" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white font-medium">
+                            <option value="Goods">Goods (Medical Equipment / Machines)</option>
+                            <option value="Services">Services (Maintenance / AMC / Repair)</option>
+                            <option value="Both">Both (Goods & Services)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Quotation Date</label>
+                        <input type="text" id="quote-date" placeholder="DD-MM-YYYY" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Valid Until</label>
+                        <input type="text" id="quote-valid-until" placeholder="DD-MM-YYYY" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Hospital / Customer</label>
+                        <select id="quote-cust-select" onchange="onQuoteCustomerSelect()" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white">
+                            <option value="">-- Choose Existing or Enter Details --</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Customer / Hospital Name</label>
+                        <input type="text" id="quote-cust-name" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Customer Full Address</label>
+                        <input type="text" id="quote-cust-address" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">GSTIN</label>
+                        <input type="text" id="quote-cust-gstin" value="N/A" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Billing State</label>
+                        <input type="text" id="quote-cust-state" value="Uttar Pradesh" oninput="recalcQuoteTotals()" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Line Items & Medical Equipment / Services</h4>
+                        <button type="button" onclick="addQuoteItemRow()" class="bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-100 font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-emerald-200 dark:border-emerald-800 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>Add Item</span>
+                        </button>
+                    </div>
+
+                    <table class="w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-left">
+                            <tr>
+                                <th class="p-2.5">Medical Equipment Description</th>
+                                <th class="p-2.5 w-24 text-center">Type</th>
+                                <th class="p-2.5 w-20 text-center">HSN/SAC</th>
+                                <th class="p-2.5 w-16 text-center">Qty</th>
+                                <th class="p-2.5 w-16 text-center">Unit</th>
+                                <th class="p-2.5 w-32">Rate (₹)</th>
+                                <th class="p-2.5 w-28 text-center">Rate Type</th>
+                                <th class="p-2.5 w-16 text-center">GST %</th>
+                                <th class="p-2.5 w-28 text-right">Amount (₹)</th>
+                                <th class="p-2.5 w-10 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="quote-items-tbody" class="divide-y divide-slate-200 dark:divide-slate-700">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t dark:border-slate-800">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Terms & Delivery Conditions</label>
+                        <textarea id="quote-terms" rows="4" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 space-y-2">
+                        <div class="flex justify-between text-slate-600 dark:text-slate-400">
+                            <span>Subtotal (Excl. Tax):</span>
+                            <span id="quote-subtotal" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div id="quote-cgst-row" class="flex justify-between text-slate-600 dark:text-slate-400">
+                            <span>Central Tax (CGST):</span>
+                            <span id="quote-cgst" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div id="quote-sgst-row" class="flex justify-between text-slate-600 dark:text-slate-400">
+                            <span>State Tax (SGST):</span>
+                            <span id="quote-sgst" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div id="quote-igst-row" class="flex justify-between text-slate-600 dark:text-slate-400 hidden">
+                            <span>Integrated Tax (IGST):</span>
+                            <span id="quote-igst" class="font-semibold text-slate-800 dark:text-slate-200">₹0.00</span>
+                        </div>
+                        <div class="flex justify-between text-slate-900 dark:text-white font-bold text-sm pt-2 border-t border-slate-300 dark:border-slate-600">
+                            <span>Grand Total (INR):</span>
+                            <span id="quote-grand-total" class="text-emerald-700 dark:text-emerald-400 text-base">₹0.00</span>
+                        </div>
+                        <div class="text-[11px] text-slate-500 dark:text-slate-400 italic pt-1" id="quote-amount-words"></div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t dark:border-slate-800">
+                    <button type="button" onclick="closeModal('modal-quotation')" class="px-4 py-2 border dark:border-slate-700 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-lg shadow-sm transition">Save Quotation</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PREVIEW INVOICE / QUOTATION / CHALLAN -->
+    <div id="modal-preview" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-5xl w-full h-[95vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-100 dark:bg-slate-800">
+                <div class="flex items-center space-x-3">
+                    <h3 id="preview-modal-title" class="font-bold text-slate-800 dark:text-slate-100 text-sm">Document Preview</h3>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="preview-download-btn" onclick="downloadPdfFromPreview()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg flex items-center space-x-1 shadow-sm transition">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        <span>Download PDF</span>
+                    </button>
+                    <button id="preview-print-btn" onclick="printFromPreview()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs px-3.5 py-1.5 rounded-lg flex items-center space-x-1 shadow-sm transition">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>
+                        <span>Print</span>
+                    </button>
+                    <button onclick="closeModal('modal-preview')" class="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 p-1">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 bg-slate-200 dark:bg-slate-950 p-2 overflow-hidden flex justify-center">
+                <iframe id="preview-iframe" src="" class="w-full h-full border-0 rounded-lg shadow-inner bg-white"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE / EDIT DELIVERY CHALLAN -->
+    <div id="modal-challan" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-5xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <div class="flex items-center space-x-3">
+                    <h3 id="modal-challan-title" class="font-bold text-slate-800 dark:text-slate-100 text-base flex items-center space-x-2">
+                        <i data-lucide="truck" class="w-5 h-5 text-amber-600 dark:text-amber-400"></i>
+                        <span>Create Delivery Challan</span>
+                    </h3>
+                    <span id="challan-no-badge" class="bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-xs font-bold px-2.5 py-1 rounded-full border border-amber-200 dark:border-amber-800">
+                        Challan No: Auto-generated
+                    </span>
+                </div>
+                <button onclick="closeModal('modal-challan')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="challan-form" onsubmit="saveChallan(event)" class="flex-1 overflow-y-auto p-6 space-y-6 text-xs">
+                <input type="hidden" id="challan-edit-id" value="">
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Purpose / Reason for Transportation</label>
+                        <select id="challan-reason" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white font-medium">
+                            <option value="Supply for Installation & Commissioning">Supply for Installation & Commissioning</option>
+                            <option value="Supply of Medical Equipment on Approval / Trial">Supply of Medical Equipment on Approval / Trial</option>
+                            <option value="Medical Equipment Sent for Demonstration">Medical Equipment Sent for Demonstration</option>
+                            <option value="Job Work / Repair / Maintenance">Job Work / Repair / Maintenance</option>
+                            <option value="Replacement Under Warranty">Replacement Under Warranty</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Challan Date</label>
+                        <input type="text" id="challan-date" placeholder="DD-MM-YYYY" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+                        <select id="challan-status" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white font-medium">
+                            <option value="Dispatched">Dispatched</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Invoiced">Invoiced</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Select Consignee / Customer</label>
+                        <select id="challan-cust-select" onchange="onChallanCustomerSelect()" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white">
+                            <option value="">-- Choose Existing or Enter Details --</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Hospital / Consignee Name</label>
+                        <input type="text" id="challan-cust-name" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Delivery Address</label>
+                        <input type="text" id="challan-cust-address" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">GSTIN</label>
+                        <input type="text" id="challan-cust-gstin" value="N/A" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Delivery State</label>
+                        <input type="text" id="challan-cust-state" value="Uttar Pradesh" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+
+                    <!-- Transporter Details -->
+                    <div class="md:col-span-4 bg-amber-50/60 dark:bg-amber-950/30 p-3 rounded-lg border border-amber-200 dark:border-amber-900/50">
+                        <div class="text-[11px] font-bold text-amber-800 dark:text-amber-300 uppercase tracking-wide mb-2 flex items-center space-x-1">
+                            <i data-lucide="truck" class="w-3.5 h-3.5"></i>
+                            <span>Transport & Dispatch Details</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">Transporter Name / Mode</label>
+                                <input type="text" id="challan-transporter" placeholder="e.g. Direct Vehicle / Blue Dart" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">Vehicle Number</label>
+                                <input type="text" id="challan-vehicle-no" placeholder="e.g. UP 53 AB 1234" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-600 dark:text-slate-400 mb-0.5">E-Way Bill Number</label>
+                                <input type="text" id="challan-eway-bill" placeholder="12-digit E-Way Bill No" class="w-full p-1.5 border dark:border-slate-700 rounded dark:bg-slate-800 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="font-bold text-slate-800 dark:text-slate-200 text-sm">Dispatched Equipment & Materials</h4>
+                        <button type="button" onclick="addChallanItemRow()" class="bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 hover:bg-amber-100 font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-1 border border-amber-200 dark:border-amber-800 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            <span>Add Item</span>
+                        </button>
+                    </div>
+
+                    <table class="w-full border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden">
+                        <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-left">
+                            <tr>
+                                <th class="p-2.5">Medical Equipment Description (with SN)</th>
+                                <th class="p-2.5 w-24 text-center">HSN</th>
+                                <th class="p-2.5 w-20 text-center">Qty</th>
+                                <th class="p-2.5 w-20 text-center">Unit</th>
+                                <th class="p-2.5 w-32">Approx Rate (₹)</th>
+                                <th class="p-2.5 w-32 text-right">Approx Value (₹)</th>
+                                <th class="p-2.5 w-10 text-center"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="challan-items-tbody" class="divide-y divide-slate-200 dark:divide-slate-700">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Terms & Approx Total -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t dark:border-slate-800">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Terms, Instructions & Declarations</label>
+                        <textarea id="challan-terms" rows="3" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col justify-center">
+                        <div class="flex justify-between text-slate-900 dark:text-white font-bold text-sm">
+                            <span>Approx Total Value:</span>
+                            <span id="challan-grand-total" class="text-amber-700 dark:text-amber-400 text-base">₹0.00</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1 italic">Indicative value for transportation, insurance, and transit safety under Rule 55.</p>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-4 border-t dark:border-slate-800">
+                    <button type="button" onclick="closeModal('modal-challan')" class="px-4 py-2 border dark:border-slate-700 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-semibold px-6 py-2 rounded-lg shadow-sm transition">Save Delivery Challan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT CUSTOMER -->
+    <div id="modal-customer" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Add Customer / Hospital</h3>
+                <button onclick="closeModal('modal-customer')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="customer-form" onsubmit="saveCustomer(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Hospital / Client Name</label>
+                    <input type="text" id="cust-name" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Contact Person (Doctor/Manager)</label>
+                    <input type="text" id="cust-contact" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Phone</label>
+                        <input type="text" id="cust-phone" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Email</label>
+                        <input type="email" id="cust-email" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Address</label>
+                    <textarea id="cust-address" required rows="2" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">City / District</label>
+                        <input type="text" id="cust-city" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">State</label>
+                        <input type="text" id="cust-state" value="Uttar Pradesh" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">GSTIN (Enter N/A if unregistered)</label>
+                    <input type="text" id="cust-gstin" value="N/A" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3 border-t dark:border-slate-800">
+                    <button type="button" onclick="closeModal('modal-customer')" class="px-4 py-2 border dark:border-slate-700 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition">Save Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD / EDIT PRODUCT -->
+    <div id="modal-product" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                <h3 class="font-bold text-slate-800 dark:text-slate-100 text-base">Add Medical Equipment</h3>
+                <button onclick="closeModal('modal-product')" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="product-form" onsubmit="saveProduct(event)" class="p-6 space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Equipment / Item Name</label>
+                    <input type="text" id="prod-name" required placeholder="e.g. RMS Digital 100 mA Mobile X Ray Machine with trolly" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Category</label>
+                        <input type="text" id="prod-category" value="Medical Equipment" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">HSN / SAC Code</label>
+                        <input type="text" id="prod-hsn" value="9018" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Default Rate (₹)</label>
+                        <input type="number" step="0.01" id="prod-rate" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">GST Rate (%)</label>
+                        <input type="number" step="0.1" id="prod-gst" value="5.0" required class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Unit</label>
+                        <input type="text" id="prod-unit" value="Pcs" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white">
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Rate Pricing Mode</label>
+                    <select id="prod-tax-mode" class="w-full p-2 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white">
+                        <option value="exclusive">Exclusive of GST (Base Rate)</option>
+                        <option value="inclusive">Inclusive of GST (Final Price)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Description / Specs</label>
+                    <textarea id="prod-desc" rows="2" class="w-full p-2 border dark:border-slate-700 rounded-lg dark:bg-slate-800 dark:text-white"></textarea>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Equipment Image (for Quotation Visual Specs)</label>
+                    <input type="file" id="prod-image-file" accept="image/*" class="w-full p-1.5 border dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 dark:text-white">
+                </div>
+                <div class="flex justify-end space-x-3 pt-3 border-t dark:border-slate-800">
+                    <button type="button" onclick="closeModal('modal-product')" class="px-4 py-2 border dark:border-slate-700 rounded-lg font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition">Save Equipment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- App Logic Scripts -->
+    <script src="/static/js/app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

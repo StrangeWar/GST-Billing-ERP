@@ -1,0 +1,431 @@
+/* Pixel-perfect Print & Document Stylesheet for ERP Invoices & Quotations */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --border-color: #cbd5e1;
+  --table-border: #94a3b8;
+  --header-bg: #f8fafc;
+}
+
+.document-body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-main);
+  background-color: #ffffff;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.document-sheet {
+  width: 210mm;
+  min-height: 297mm;
+  padding: 16mm 16mm 12mm 16mm;
+  margin: 0 auto;
+  background: white;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Section */
+.doc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.doc-brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.doc-logo {
+  width: 62px;
+  height: 62px;
+  object-fit: contain;
+}
+
+.doc-company-info h1 {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin: 0 0 2px 0;
+  color: #0f172a;
+}
+
+.doc-company-info p {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 2px 0;
+  line-height: 1.35;
+}
+
+.doc-title-block {
+  text-align: right;
+}
+
+.doc-title-block h2 {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+  color: #0f172a;
+}
+
+.doc-meta-table {
+  font-size: 12px;
+  margin-left: auto;
+  border-collapse: collapse;
+}
+
+.doc-meta-table td {
+  padding: 2px 4px;
+}
+
+.doc-meta-table .meta-label {
+  font-weight: 700;
+  color: #1e293b;
+  text-align: right;
+}
+
+.doc-meta-table .meta-val {
+  text-align: right;
+  color: #334155;
+}
+
+.divider-line {
+  border-top: 1.5px solid #0f172a;
+  margin: 10px 0 16px 0;
+}
+
+/* Info Cards (Billed To & Bank Details) */
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.info-card {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.info-card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #0f172a;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 5px;
+  margin-bottom: 6px;
+}
+
+.info-card p {
+  margin: 3px 0;
+}
+
+.recipient-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+
+/* Items Table */
+.items-table-wrapper {
+  margin-bottom: 18px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.items-table th {
+  background-color: var(--header-bg);
+  color: #1e293b;
+  font-weight: 700;
+  text-align: left;
+  padding: 8px 6px;
+  border: 1px solid var(--border-color);
+}
+
+.items-table td {
+  padding: 8px 6px;
+  border: 1px solid var(--border-color);
+  vertical-align: top;
+  line-height: 1.35;
+}
+
+.items-table .col-sno {
+  width: 40px;
+  text-align: center;
+}
+
+.items-table .col-desc {
+  width: auto;
+}
+
+.items-table .col-hsn {
+  width: 65px;
+  text-align: center;
+}
+
+.items-table .col-qty {
+  width: 65px;
+  text-align: center;
+}
+
+.items-table .col-rate {
+  width: 85px;
+  text-align: right;
+}
+
+.items-table .col-gst {
+  width: 50px;
+  text-align: center;
+}
+
+.items-table .col-amount {
+  width: 95px;
+  text-align: right;
+}
+
+.item-desc-text {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.item-sn-tag {
+  color: #334155;
+  font-size: 11px;
+}
+
+/* Bottom Calculation & Terms Grid */
+.doc-bottom-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.terms-section h4 {
+  font-size: 12px;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  color: #0f172a;
+}
+
+.terms-content {
+  font-size: 10.5px;
+  color: #334155;
+  line-height: 1.45;
+  white-space: pre-line;
+  margin-bottom: 14px;
+}
+
+.upi-payment-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.upi-qr-img {
+  width: 85px;
+  height: 85px;
+  border: 1px solid #cbd5e1;
+  padding: 3px;
+  border-radius: 4px;
+}
+
+.upi-info {
+  font-size: 10.5px;
+  line-height: 1.4;
+}
+
+.upi-title {
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 2px;
+}
+
+.upi-details {
+  color: #334155;
+}
+
+/* Totals Table */
+.totals-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.totals-table td {
+  padding: 4px 6px;
+}
+
+.totals-table .total-label {
+  text-align: right;
+  color: #334155;
+}
+
+.totals-table .total-val {
+  text-align: right;
+  font-weight: 600;
+  width: 105px;
+}
+
+.grand-total-row td {
+  padding: 6px;
+  border-top: 1.5px solid #0f172a;
+  border-bottom: 1.5px solid #0f172a;
+}
+
+.grand-total-row .total-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.grand-total-row .total-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.amount-words-box {
+  margin-top: 8px;
+  font-size: 10.5px;
+  line-height: 1.4;
+  text-align: right;
+  color: #334155;
+}
+
+.amount-words-box .words-label {
+  font-weight: 600;
+}
+
+.amount-words-box .words-val {
+  font-style: italic;
+}
+
+/* Signatory Section */
+.doc-footer-signature {
+  margin-top: auto;
+  text-align: right;
+  padding-top: 30px;
+}
+
+.doc-footer-signature .for-company {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 45px;
+}
+
+.doc-footer-signature .sig-line {
+  display: inline-block;
+  border-top: 1px solid #64748b;
+  width: 180px;
+  padding-top: 4px;
+  font-size: 11px;
+  color: #334155;
+  text-align: center;
+}
+
+/* Page 2: Product Visual Specifications (Quotation) */
+.page-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+.spec-page-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.spec-divider {
+  border-top: 1.5px solid #0f172a;
+  margin-bottom: 24px;
+}
+
+.visual-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.spec-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 260px;
+}
+
+.spec-img-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.spec-product-img {
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.spec-product-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+/* Media Print Rules */
+@media print {
+  body {
+    background: transparent !important;
+    padding: 0 !important;
+  }
+  
+  .document-sheet {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 297mm !important;
+    padding: 14mm 14mm 10mm 14mm !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+}
